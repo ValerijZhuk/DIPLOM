@@ -1,6 +1,6 @@
 import json
 
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,6 +27,11 @@ class NewsView(APIView):
     def delete(self, request, pk):
         News.objects.get(id=pk).delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class DeleteNews(generics.DestroyAPIView):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
 
 
 class RSSNewsView(APIView):

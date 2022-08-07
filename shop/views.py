@@ -7,9 +7,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from shop.models import *
 from shop.serializers import ProductSerializer, ProductNameSerializer, BrandNameSerializer, BasketSerializer
+from auth_site.celery import clear_basket
 
 
 class ProductNameView(generics.ListCreateAPIView):
+    queryset = ProductName.objects.all()
+    serializer_class = ProductNameSerializer
+
+
+class DeleteProductNameView(generics.DestroyAPIView):
     queryset = ProductName.objects.all()
     serializer_class = ProductNameSerializer
 
@@ -19,12 +25,27 @@ class BrandNameView(generics.ListCreateAPIView):
     serializer_class = BrandNameSerializer
 
 
+class DeleteBrandNameView(generics.DestroyAPIView):
+    queryset = BrandName.objects.all()
+    serializer_class = BrandNameSerializer
+
+
 class ProductsView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
+class DeleteProductsView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
 class BasketView(generics.ListCreateAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+
+class DeleteBasketView(generics.DestroyAPIView):
     queryset = Basket.objects.all()
     serializer_class = BasketSerializer
 
@@ -59,4 +80,5 @@ class ExportBasketInExcel(APIView):
         response = HttpResponse(content_type='application/ms_excel')
         response['Content_Disposition'] = f'attachment; filename = Data.xlsx'
         workbook.save(response)
+        clear_basket.delay()
         return response
