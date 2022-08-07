@@ -1,6 +1,9 @@
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
+
+from .models import UserAccount
 from .serializers import UserCreateSerializer, UserSerializer
 
 
@@ -26,3 +29,13 @@ class RetrieveUserView(APIView):
         user = UserSerializer(user)
 
         return Response(user.data, status=status.HTTP_200_OK)
+
+
+
+
+
+@api_view(['GET'])
+def user_list(request, ):
+    users = UserAccount.objects.all().order_by('username')
+    serializer = UserSerializer(instance=users, many=True)
+    return Response(serializer.data)
